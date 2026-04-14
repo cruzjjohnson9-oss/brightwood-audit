@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coaching Automation Audit — Brightwood AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --purple:#6366f1;
+  --purple-dim:rgba(99,102,241,.09);
+  --emerald:#10b981;
+  --amber:#f59e0b;
+  --rose:#f43f5e;
+  --ink:#111827;
+  --ink2:#374151;
+  --ink3:#6b7280;
+  --ink4:#9ca3af;
+  --line:#e5e7eb;
+  --bg:#f9fafb;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#f5f4f0;
+  color:var(--ink);
+  line-height:1.6;
+  padding-bottom:100px;
+}
+
+/* ── HEADER ── */
+.hdr{
+  padding:16px 24px;background:#fff;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;
+}
+.hdr-dot{width:7px;height:7px;background:var(--purple);border-radius:50%}
+.hdr-brand{font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.12em;text-transform:uppercase}
+
+.wrap{max-width:600px;margin:0 auto;padding:0 24px}
+
+/* ── HERO ── */
+.hero{padding:52px 0 36px;text-align:center}
+.hero-tag{
+  font-size:11px;font-weight:700;color:var(--ink3);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:16px;display:block;
+}
+.hero h1{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(28px,7vw,44px);font-weight:800;line-height:1.1;
+  letter-spacing:-.04em;color:var(--ink);margin-bottom:14px;
+}
+.hero h1 em{font-style:normal;color:var(--purple)}
+.hero-sub{font-size:15px;color:var(--ink3);line-height:1.75;max-width:440px;margin:0 auto 24px}
+.hero-note{font-size:12px;color:var(--ink4)}
+
+.divider{height:1px;background:var(--line);margin:8px 0}
+
+/* ── QUIZ STEPS ── */
+.step-indicator{
+  display:flex;align-items:center;gap:6px;
+  justify-content:center;padding:24px 0 0;
+}
+.step-pip{
+  width:28px;height:4px;border-radius:2px;background:var(--line);transition:background .3s;
+}
+.step-pip.active{background:var(--purple)}
+.step-pip.done{background:#a5b4fc}
+
+.step{display:none}
+.step.active{display:block}
+
+.step-card{
+  background:#fff;border-radius:16px;border:1px solid var(--line);
+  padding:28px;margin:24px 0 0;
+}
+.step-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--purple);margin-bottom:6px;display:block;
+}
+.step-q{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:20px;font-weight:700;color:var(--ink);margin-bottom:6px;letter-spacing:-.02em;
+}
+.step-hint{font-size:13px;color:var(--ink4);margin-bottom:20px;line-height:1.5}
+
+/* Fields */
+label.field-label{
+  display:block;font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:6px;
+}
+input,textarea,select{
+  width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:8px;
+  padding:11px 14px;font-size:13px;color:var(--ink);font-family:inherit;
+  outline:none;transition:border-color .15s;-webkit-appearance:none;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--purple);background:#fff}
+input::placeholder,textarea::placeholder{color:#bbb}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ca3af' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;
+}
+select option{background:#fff}
+.field{margin-bottom:14px}
+
+/* Checkbox grid */
+.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.check-item{
+  display:flex;align-items:center;gap:8px;cursor:pointer;
+  padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;
+  transition:all .15s;user-select:none;background:#fff;
+}
+.check-item:hover{border-color:#c7d2fe}
+.check-item.sel{border-color:var(--purple);background:var(--purple-dim)}
+.check-item input{display:none}
+.chk-box{
+  width:16px;height:16px;border:1.5px solid #d1d5db;border-radius:4px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.check-item.sel .chk-box{background:var(--purple);border-color:var(--purple)}
+.check-item.sel .chk-box::after{content:'✓';font-size:9px;font-weight:900;color:#fff}
+.chk-label{font-size:12px;color:var(--ink3);line-height:1.3}
+.check-item.sel .chk-label{color:var(--ink2);font-weight:600}
+
+/* Tools multi-select */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tool-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;
+  padding:12px 8px;border:1.5px solid var(--line);border-radius:8px;
+  transition:all .15s;user-select:none;text-align:center;background:#fff;
+}
+.tool-item:hover{border-color:#c7d2fe}
+.tool-item.sel{border-color:var(--purple);background:var(--purple-dim)}
+.tool-icon{font-size:20px}
+.tool-name-label{font-size:10px;font-weight:600;color:var(--ink3)}
+.tool-item.sel .tool-name-label{color:var(--purple)}
+
+/* Nav buttons */
+.btn-row{display:flex;gap:10px;margin-top:20px;justify-content:space-between}
+.btn-back{
+  background:transparent;border:1.5px solid var(--line);border-radius:8px;
+  padding:12px 20px;font-size:13px;font-weight:600;color:var(--ink3);
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.btn-back:hover{border-color:var(--ink3);color:var(--ink)}
+.btn-next{
+  background:var(--ink);color:#fff;border:none;border-radius:8px;
+  padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .15s;flex:1;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-next:hover{background:#000;transform:translateY(-1px)}
+.btn-next:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.spinner{
+  width:14px;height:14px;border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;
+}
+.btn-next.loading .spinner{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ERROR ── */
+.error-box{
+  background:#fff5f5;border:1.5px solid #fecaca;border-radius:8px;
+  padding:12px 16px;font-size:13px;color:#dc2626;margin-top:12px;display:none;
+}
+.error-box.show{display:block}
+
+/* ── RESULTS ── */
+.results{display:none;margin-top:24px}
+.results.show{display:block}
+
+/* Score card */
+.score-card{
+  background:#fff;border-radius:16px;border:1px solid var(--line);
+  padding:28px;margin-bottom:16px;
+  display:flex;align-items:center;gap:24px;
+}
+.score-ring{
+  flex-shrink:0;width:100px;height:100px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.score-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.score-ring-track{fill:none;stroke:#f3f4f6;stroke-width:8}
+.score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s ease}
+.score-inner{text-align:center;z-index:1}
+.score-num{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:28px;font-weight:800;color:var(--ink);line-height:1;
+}
+.score-label{font-size:10px;font-weight:700;color:var(--ink4);text-transform:uppercase;letter-spacing:.05em}
+
+.score-right h2{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:22px;font-weight:800;color:var(--ink);letter-spacing:-.02em;margin-bottom:4px;
+}
+.score-grade{
+  display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;padding:4px 10px;border-radius:20px;margin-bottom:10px;
+}
+.score-summary{font-size:13px;color:var(--ink3);line-height:1.65}
+
+/* Metrics row */
+.metrics-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border-radius:12px;overflow:hidden;margin-bottom:16px;
+}
+.metric-box{background:#fff;padding:18px 16px}
+.metric-val{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:26px;font-weight:800;line-height:1;margin-bottom:4px;
+}
+.metric-label{font-size:11px;color:var(--ink4);line-height:1.3}
+
+/* Section heading */
+.res-section-hdr{
+  font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--ink4);margin:24px 0 12px;
+}
+
+/* Automation roadmap cards */
+.auto-card{
+  background:#fff;border:1.5px solid var(--line);border-radius:12px;
+  margin-bottom:10px;overflow:hidden;
+}
+.auto-card-hdr{
+  display:flex;align-items:center;gap:10px;padding:14px 16px;
+  border-bottom:1px solid #f3f4f6;
+}
+.auto-rank{
+  width:24px;height:24px;border-radius:6px;background:var(--purple);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:900;color:#fff;flex-shrink:0;
+}
+.auto-name{font-size:13px;font-weight:700;color:var(--ink);flex:1}
+.impact-badge{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  padding:3px 8px;border-radius:20px;
+}
+.impact-high{background:#d1fae5;color:#059669}
+.impact-medium{background:#fef3c7;color:#d97706}
+.impact-low{background:#f3f4f6;color:var(--ink4)}
+.time-save{
+  font-size:11px;font-weight:700;color:var(--purple);
+  background:var(--purple-dim);border-radius:4px;padding:2px 8px;white-space:nowrap;
+}
+
+.auto-body{padding:12px 16px}
+.auto-what{font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:8px}
+.auto-without{font-size:11px;color:var(--rose);line-height:1.5;margin-bottom:8px}
+.auto-tools{display:flex;flex-wrap:wrap;gap:5px}
+.auto-tool-pill{
+  font-size:10px;font-weight:600;color:var(--ink4);
+  background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:2px 8px;
+}
+
+/* Roadmap phases */
+.phases{display:flex;flex-direction:column;gap:8px}
+.phase-row{
+  background:#fff;border:1.5px solid var(--line);border-radius:10px;
+  display:flex;align-items:stretch;overflow:hidden;
+}
+.phase-label{
+  background:var(--purple);color:#fff;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  padding:14px 12px;writing-mode:vertical-rl;text-orientation:mixed;
+  white-space:nowrap;display:flex;align-items:center;justify-content:center;
+  min-width:44px;flex-shrink:0;
+}
+.phase-body{padding:14px 16px;flex:1}
+.phase-phase{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.phase-focus{font-size:12px;color:var(--ink3);line-height:1.6}
+
+/* Quick wins */
+.wins-list{list-style:none}
+.win-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--bg);
+  font-size:13px;color:var(--ink2);line-height:1.5;
+}
+.win-item:last-child{border-bottom:none}
+.win-num{
+  width:22px;height:22px;border-radius:6px;background:var(--emerald);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px;
+}
+
+/* ── CTA BLOCK ── */
+.cta-block{
+  background:var(--ink);border-radius:16px;padding:36px 28px;
+  text-align:center;margin-top:24px;
+}
+.cta-block h2{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:22px;font-weight:800;color:#fff;letter-spacing:-.02em;margin-bottom:8px;
+}
+.cta-block .cta-sub{font-size:14px;color:#9ca3af;line-height:1.7;max-width:380px;margin:0 auto 10px}
+.cta-proof{
+  font-size:12px;font-weight:700;color:var(--purple);letter-spacing:.01em;
+  margin-bottom:24px;
+}
+.cta-btn{
+  display:inline-block;background:#6366f1;color:#fff;
+  font-size:14px;font-weight:700;padding:14px 32px;border-radius:10px;
+  text-decoration:none;transition:all .15s;margin-bottom:10px;
+  font-family:'Space Grotesk',sans-serif;
+}
+.cta-btn:hover{background:#4f46e5;transform:translateY(-1px)}
+.cta-fine{font-size:11px;color:#6b7280}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-dot"></div>
+  <div class="hdr-brand">Brightwood AI</div>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="hero-tag">Free Audit · Takes 2 minutes</span>
+    <h1>How <em>Automated</em> Is<br>Your Coaching Program?</h1>
+    <p class="hero-sub">Answer 5 questions. Get a fully custom automation roadmap — exactly what to build, in what order, and how many hours you'll get back every week.</p>
+    <div class="hero-note">No sign up. Completely free to you — my treat.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Step indicators -->
+  <div class="step-indicator">
+    <div class="step-pip active" id="pip-1"></div>
+    <div class="step-pip" id="pip-2"></div>
+    <div class="step-pip" id="pip-3"></div>
+    <div class="step-pip" id="pip-4"></div>
+    <div class="step-pip" id="pip-5"></div>
+  </div>
+
+  <!-- ── STEP 1: About Your Program ── -->
+  <div class="step active" id="step-1">
+    <div class="step-card">
+      <span class="step-label">Step 1 of 5</span>
+      <div class="step-q">Tell me about your coaching program</div>
+      <div class="step-hint">The more specific, the more accurate your roadmap will be.</div>
+
+      <div class="field">
+        <label class="field-label">What type of coaching do you do?</label>
+        <input type="text" id="niche" placeholder="e.g. Business coaching for female entrepreneurs">
+      </div>
+      <div class="field">
+        <label class="field-label">How many active clients do you have?</label>
+        <select id="clients">
+          <option value="">Select one</option>
+          <option value="1–3">1–3 clients</option>
+          <option value="4–6">4–6 clients</option>
+          <option value="7–10">7–10 clients</option>
+          <option value="11–20">11–20 clients</option>
+          <option value="20+">20+ clients</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">How many sessions do you run per week?</label>
+        <select id="sessions">
+          <option value="">Select one</option>
+          <option value="1–3">1–3 sessions/week</option>
+          <option value="4–6">4–6 sessions/week</option>
+          <option value="7–10">7–10 sessions/week</option>
+          <option value="10+">10+ sessions/week</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">How long is your program?</label>
+        <select id="program-length">
+          <option value="">Select one</option>
+          <option value="1 month">1 month</option>
+          <option value="3 months">3 months</option>
+          <option value="6 months">6 months</option>
+          <option value="12 months">12 months</option>
+          <option value="Ongoing / no fixed end">Ongoing / no fixed end</option>
+        </select>
+      </div>
+
+      <div class="btn-row" style="justify-content:flex-end">
+        <button class="btn-next" onclick="goTo(2)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: What You're Doing Manually ── -->
+  <div class="step" id="step-2">
+    <div class="step-card">
+      <span class="step-label">Step 2 of 5</span>
+      <div class="step-q">What are you still doing manually?</div>
+      <div class="step-hint">Select everything you handle yourself — even if you have some help.</div>
+
+      <div class="check-grid">
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Writing session recaps</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Client follow-up messages</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Onboarding new clients</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Prepping before calls</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Monthly progress reviews</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Sending milestone emails</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Re-engaging quiet clients</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Asking for referrals/testimonials</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Assigning resources to clients</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Building program materials</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Answering client questions</span></div>
+        <div class="check-item" onclick="toggle(this)"><div class="chk-box"></div><span class="chk-label">Tracking client progress</span></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(1)">← Back</button>
+        <button class="btn-next" onclick="goTo(3)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: Tools ── -->
+  <div class="step" id="step-3">
+    <div class="step-card">
+      <span class="step-label">Step 3 of 5</span>
+      <div class="step-q">What tools are you using today?</div>
+      <div class="step-hint">Select all that apply — even tools you barely use.</div>
+
+      <div class="tool-grid">
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Zoom"><div class="tool-icon">📹</div><div class="tool-name-label">Zoom</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Google Calendar"><div class="tool-icon">📅</div><div class="tool-name-label">Google Calendar</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Gmail"><div class="tool-icon">✉️</div><div class="tool-name-label">Gmail</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Notion"><div class="tool-icon">📓</div><div class="tool-name-label">Notion</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Google Docs"><div class="tool-icon">📄</div><div class="tool-name-label">Google Docs</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Stripe / Payment"><div class="tool-icon">💳</div><div class="tool-name-label">Stripe</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Calendly / Scheduling"><div class="tool-icon">🗓️</div><div class="tool-name-label">Calendly</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Slack"><div class="tool-icon">💬</div><div class="tool-name-label">Slack</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="WhatsApp"><div class="tool-icon">📱</div><div class="tool-name-label">WhatsApp</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Typeform / Forms"><div class="tool-icon">📋</div><div class="tool-name-label">Typeform</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="ClickUp / Project Mgmt"><div class="tool-icon">✅</div><div class="tool-name-label">ClickUp</div></div>
+        <div class="tool-item" onclick="toggleTool(this)" data-tool="Kajabi / Course Platform"><div class="tool-icon">🎓</div><div class="tool-name-label">Kajabi</div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(2)">← Back</button>
+        <button class="btn-next" onclick="goTo(4)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 4: Time ── -->
+  <div class="step" id="step-4">
+    <div class="step-card">
+      <span class="step-label">Step 4 of 5</span>
+      <div class="step-q">How much time are you spending on admin?</div>
+      <div class="step-hint">Be honest — this shapes your roadmap.</div>
+
+      <div class="field">
+        <label class="field-label">Hours per week on non-coaching tasks (emails, notes, follow-ups, prep)</label>
+        <select id="hours">
+          <option value="">Select one</option>
+          <option value="Under 2 hours">Under 2 hours</option>
+          <option value="2–4 hours">2–4 hours</option>
+          <option value="5–7 hours">5–7 hours</option>
+          <option value="8–12 hours">8–12 hours</option>
+          <option value="12+ hours">12+ hours</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="field-label">What's your biggest frustration right now? <span style="color:#bbb;font-weight:400">(optional)</span></label>
+        <textarea id="extra" placeholder="e.g. I keep forgetting to follow up. Onboarding takes forever. I can't keep up with notes." style="min-height:80px"></textarea>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(3)">← Back</button>
+        <button class="btn-next" onclick="goTo(5)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 5: Confirm ── -->
+  <div class="step" id="step-5">
+    <div class="step-card">
+      <span class="step-label">Step 5 of 5</span>
+      <div class="step-q">Ready to see your roadmap?</div>
+      <div class="step-hint">Based on what you've shared, we'll generate a fully custom automation plan — what to build, in what order, and exactly how much time each one saves.</div>
+
+      <div style="background:var(--bg);border-radius:10px;padding:16px 18px;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:12px">Your audit summary:</div>
+        <div id="summary-preview" style="font-size:13px;color:var(--ink2);line-height:1.8"></div>
+      </div>
+
+      <div class="error-box" id="error-box"></div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(4)">← Back</button>
+        <button class="btn-next" id="submit-btn" onclick="submit()">
+          <div class="spinner" id="spinner"></div>
+          <span id="submit-label">Generate My Roadmap →</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div class="results" id="results">
+
+    <!-- Score card -->
+    <div class="score-card" id="score-card">
+      <div class="score-ring">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <circle class="score-ring-track" cx="50" cy="50" r="42"/>
+          <circle class="score-ring-fill" id="ring-fill" cx="50" cy="50" r="42"
+            stroke="#6366f1"
+            stroke-dasharray="263.9"
+            stroke-dashoffset="263.9"/>
+        </svg>
+        <div class="score-inner">
+          <div class="score-num" id="score-num">0</div>
+          <div class="score-label">Score</div>
+        </div>
+      </div>
+      <div class="score-right">
+        <h2 id="grade-label">Calculating...</h2>
+        <div class="score-grade" id="grade-badge"></div>
+        <div class="score-summary" id="score-summary"></div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics-row">
+      <div class="metric-box">
+        <div class="metric-val" id="m-hours-before" style="color:#dc2626">—</div>
+        <div class="metric-label">Hours lost to admin per week right now</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val" id="m-hours-after" style="color:#10b981">—</div>
+        <div class="metric-label">Hours after full automation</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val" id="m-clients" style="color:#6366f1">—</div>
+        <div class="metric-label">Clients you could manage with the same schedule</div>
+      </div>
+    </div>
+
+    <!-- Revenue unlock callout -->
+    <div style="background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(99,102,241,.03));border:1.5px solid rgba(99,102,241,.15);border-radius:12px;padding:18px 20px;margin-bottom:8px;display:flex;align-items:center;gap:14px">
+      <div style="font-size:24px">💰</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px">Revenue unlock</div>
+        <div style="font-size:13px;color:var(--ink3);line-height:1.5" id="revenue-unlock">Calculating...</div>
+      </div>
+    </div>
+
+    <!-- Automation roadmap -->
+    <div class="res-section-hdr">Your Custom Automation Roadmap</div>
+    <div id="automations-list"></div>
+
+    <!-- Roadmap phases -->
+    <div class="res-section-hdr">Build in This Order</div>
+    <div class="phases" id="phases-list"></div>
+
+    <!-- Quick wins -->
+    <div class="res-section-hdr">3 Things to Do This Week</div>
+    <div style="background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:8px 16px;margin-bottom:8px">
+      <ul class="wins-list" id="wins-list"></ul>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-block">
+      <h2>Want Cruz to build this for you?</h2>
+      <p class="cta-sub">Every automation in your roadmap — connected end to end, running on your tools, tuned to your voice. Most coaches go from 0 to fully automated in one week.</p>
+      <div class="cta-proof">He's helped over 5,000 students.</div>
+      <a class="cta-btn" href="https://cal.com/cruzjohnson" target="_blank">Book a Free 20-Min Call →</a><br>
+      <div class="cta-fine">No pitch. Just a map of what's possible for your specific program.</div>
+    </div>
+
+  </div>
+
+</div><!-- /.wrap -->
+
+<script>
+let currentStep = 1;
+
+function goTo(n) {
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  currentStep = n;
+  document.getElementById(`step-${n}`).classList.add('active');
+  updatePips();
+  if (n === 5) buildSummaryPreview();
+  window.scrollTo({top: 0, behavior:'smooth'});
+}
+
+function updatePips() {
+  for (let i = 1; i <= 5; i++) {
+    const pip = document.getElementById(`pip-${i}`);
+    pip.classList.remove('active','done');
+    if (i === currentStep) pip.classList.add('active');
+    else if (i < currentStep) pip.classList.add('done');
+  }
+}
+
+function toggle(el) { el.classList.toggle('sel'); }
+
+function toggleTool(el) { el.classList.toggle('sel'); }
+
+function getManualTasks() {
+  return [...document.querySelectorAll('.check-item.sel')].map(el => el.querySelector('.chk-label').textContent);
+}
+
+function getTools() {
+  return [...document.querySelectorAll('.tool-item.sel')].map(el => el.dataset.tool);
+}
+
+function buildSummaryPreview() {
+  const niche = document.getElementById('niche').value || '(not specified)';
+  const clients = document.getElementById('clients').value || '(not specified)';
+  const sessions = document.getElementById('sessions').value || '(not specified)';
+  const length = document.getElementById('program-length').value || '(not specified)';
+  const hours = document.getElementById('hours').value || '(not specified)';
+  const tasks = getManualTasks();
+  const tools = getTools();
+
+  document.getElementById('summary-preview').innerHTML = `
+    <div><strong>Niche:</strong> ${niche}</div>
+    <div><strong>Clients / Sessions:</strong> ${clients} · ${sessions}</div>
+    <div><strong>Program length:</strong> ${length}</div>
+    <div><strong>Admin hours/week:</strong> ${hours}</div>
+    <div><strong>Doing manually:</strong> ${tasks.length ? tasks.join(', ') : 'None selected'}</div>
+    <div><strong>Tools:</strong> ${tools.length ? tools.join(', ') : 'None selected'}</div>
+  `;
+}
+
+async function submit() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.classList.add('loading');
+  document.getElementById('submit-label').textContent = 'Building your roadmap...';
+  document.getElementById('error-box').classList.remove('show');
+
+  const payload = {
+    niche: document.getElementById('niche').value,
+    clients: document.getElementById('clients').value,
+    sessionsPerWeek: document.getElementById('sessions').value,
+    programLength: document.getElementById('program-length').value,
+    tools: getTools().join(', '),
+    manualTasks: getManualTasks().join(', '),
+    hoursPerWeek: document.getElementById('hours').value,
+    extraContext: document.getElementById('extra').value,
+  };
+
+  try {
+    const res = await fetch('/.netlify/functions/audit', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok || data.error) { showError(data.error || 'Something went wrong. Try again.'); return; }
+    renderResults(data);
+  } catch {
+    showError('Network error. Check your connection and try again.');
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove('loading');
+    document.getElementById('submit-label').textContent = 'Generate My Roadmap →';
+  }
+}
+
+function renderResults(d) {
+  // Score ring
+  const score = d.score || 0;
+  const circumference = 263.9;
+  const offset = circumference - (score / 100) * circumference;
+  const ring = document.getElementById('ring-fill');
+  setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
+  document.getElementById('score-num').textContent = score;
+
+  // Grade
+  const gradeColors = { A:'#d1fae5', B:'#dbeafe', C:'#fef3c7', D:'#ffedd5', F:'#ffe4e6' };
+  const gradeText = { A:'#059669', B:'#2563eb', C:'#d97706', D:'#ea580c', F:'#e11d48' };
+  const grade = d.grade || 'C';
+  const gradeBadge = document.getElementById('grade-badge');
+  gradeBadge.textContent = `Grade: ${grade} — ${d.grade_label || ''}`;
+  gradeBadge.style.background = gradeColors[grade] || gradeColors.C;
+  gradeBadge.style.color = gradeText[grade] || gradeText.C;
+
+  document.getElementById('grade-label').textContent = d.grade_label || 'Assessment Complete';
+  document.getElementById('score-summary').textContent = d.summary || '';
+
+  // Metrics
+  document.getElementById('m-hours-before').textContent = d.hours_wasted || '—';
+  document.getElementById('m-hours-after').textContent = d.hours_after || '—';
+  document.getElementById('m-clients').textContent = d.clients_possible || '—';
+  document.getElementById('revenue-unlock').textContent = d.revenue_unlock || '';
+
+  // Automations
+  const autoList = document.getElementById('automations-list');
+  autoList.innerHTML = '';
+  (d.automations || []).forEach(a => {
+    const impactClass = `impact-${a.impact || 'medium'}`;
+    autoList.innerHTML += `
+      <div class="auto-card">
+        <div class="auto-card-hdr">
+          <div class="auto-rank">${a.rank}</div>
+          <div class="auto-name">${a.name}</div>
+          <span class="impact-badge ${impactClass}">${a.impact || 'medium'}</span>
+          <span class="time-save">${a.time_saved}</span>
+        </div>
+        <div class="auto-body">
+          <div class="auto-what">${a.what_it_does}</div>
+          <div class="auto-without">Without it: ${a.without_it}</div>
+          <div class="auto-tools">${(a.build_with||[]).map(t=>`<span class="auto-tool-pill">${t}</span>`).join('')}</div>
+        </div>
+      </div>`;
+  });
+
+  // Phases
+  const phaseList = document.getElementById('phases-list');
+  phaseList.innerHTML = '';
+  const phaseColors = ['#6366f1','#10b981','#f59e0b'];
+  (d.roadmap_phases || []).forEach((p,i) => {
+    phaseList.innerHTML += `
+      <div class="phase-row">
+        <div class="phase-label" style="background:${phaseColors[i]||'#6366f1'}">${p.phase}</div>
+        <div class="phase-body">
+          <div class="phase-focus">${p.focus}</div>
+        </div>
+      </div>`;
+  });
+
+  // Quick wins
+  const winsList = document.getElementById('wins-list');
+  winsList.innerHTML = '';
+  (d.quick_wins || []).forEach((w,i) => {
+    winsList.innerHTML += `<li class="win-item"><div class="win-num">${i+1}</div><span>${w}</span></li>`;
+  });
+
+  // Show results, hide steps
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.querySelector('.step-indicator').style.display = 'none';
+  document.getElementById('results').classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  box.textContent = msg;
+  box.classList.add('show');
+}
+</script>
+</body>
+</html>
