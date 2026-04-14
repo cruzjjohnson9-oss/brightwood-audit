@@ -652,8 +652,15 @@ async function submit() {
       body: JSON.stringify(payload),
     });
 
-    const data = await res.json();
-    if (!res.ok || data.error) { showError(data.error || 'Something went wrong. Try again.'); return; }
+    const text = await res.text();
+    if (!res.ok) {
+      showError('Function error (' + res.status + '): ' + text.slice(0, 200));
+      return;
+    }
+    let data;
+    try { data = JSON.parse(text); }
+    catch { showError('Bad response: ' + text.slice(0, 200)); return; }
+    if (data.error) { showError(data.error); return; }
     renderResults(data);
   } catch (err) {
     showError('Error: ' + (err && err.message ? err.message : String(err)));
