@@ -254,35 +254,48 @@ select option{background:#fff}
   background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:2px 8px;
 }
 
-/* Roadmap phases */
-.phases{display:flex;flex-direction:column;gap:8px}
-.phase-row{
-  background:#fff;border:1.5px solid var(--line);border-radius:10px;
-  display:flex;align-items:stretch;overflow:hidden;
+/* Build order map */
+.build-map{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.map-step{display:flex;flex-direction:column;align-items:center}
+.map-node{
+  width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  position:relative;
 }
-.phase-label{
-  background:var(--purple);color:#fff;
-  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
-  padding:14px 12px;writing-mode:vertical-rl;text-orientation:mixed;
-  white-space:nowrap;display:flex;align-items:center;justify-content:center;
-  min-width:44px;flex-shrink:0;
-}
-.phase-body{padding:14px 16px;flex:1}
-.phase-phase{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px}
-.phase-focus{font-size:12px;color:var(--ink3);line-height:1.6}
-
-/* Quick wins */
-.wins-list{list-style:none}
-.win-item{
-  display:flex;align-items:flex-start;gap:10px;
-  padding:10px 0;border-bottom:1px solid var(--bg);
-  font-size:13px;color:var(--ink2);line-height:1.5;
-}
-.win-item:last-child{border-bottom:none}
-.win-num{
-  width:22px;height:22px;border-radius:6px;background:var(--emerald);
+.map-node-num{
+  width:32px;height:32px;border-radius:8px;background:var(--purple);
   display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:900;color:#fff;flex-shrink:0;margin-top:1px;
+  font-size:13px;font-weight:900;color:#fff;flex-shrink:0;
+}
+.map-node-body{flex:1;min-width:0}
+.map-node-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.map-node-why{font-size:11px;color:var(--ink3);line-height:1.4}
+.map-node-save{
+  font-size:12px;font-weight:700;color:var(--emerald);
+  background:#d1fae5;border-radius:6px;padding:4px 10px;
+  white-space:nowrap;flex-shrink:0;
+}
+.map-connector{
+  display:flex;flex-direction:column;align-items:center;
+  padding:4px 0;gap:2px;
+}
+.map-conn-line{width:2px;height:10px;background:var(--purple);opacity:.3}
+.map-conn-arrow{
+  width:0;height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:7px solid var(--purple);
+  opacity:.5;
+}
+.map-total{
+  margin-top:12px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(16,185,129,.06));
+  border:1.5px solid rgba(99,102,241,.2);border-radius:12px;
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+}
+.map-total-label{font-size:12px;font-weight:600;color:var(--ink3)}
+.map-total-val{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:22px;font-weight:800;color:var(--emerald);
 }
 
 /* ── CTA BLOCK ── */
@@ -527,24 +540,15 @@ select option{background:#fff}
     <div class="metrics-row">
       <div class="metric-box">
         <div class="metric-val" id="m-hours-before" style="color:#dc2626">—</div>
-        <div class="metric-label">Hours lost to admin per week right now</div>
+        <div class="metric-label">Admin hours you're losing every week</div>
       </div>
       <div class="metric-box">
-        <div class="metric-val" id="m-hours-after" style="color:#10b981">—</div>
-        <div class="metric-label">Hours after full automation</div>
+        <div class="metric-val" id="m-hours-saved" style="color:#10b981">—</div>
+        <div class="metric-label">Hours you'll get back each week</div>
       </div>
       <div class="metric-box">
         <div class="metric-val" id="m-clients" style="color:#6366f1">—</div>
-        <div class="metric-label">Clients you could manage with the same schedule</div>
-      </div>
-    </div>
-
-    <!-- Revenue unlock callout -->
-    <div style="background:linear-gradient(135deg,rgba(99,102,241,.07),rgba(99,102,241,.03));border:1.5px solid rgba(99,102,241,.15);border-radius:12px;padding:18px 20px;margin-bottom:8px;display:flex;align-items:center;gap:14px">
-      <div style="font-size:24px">💰</div>
-      <div>
-        <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:2px">Revenue unlock</div>
-        <div style="font-size:13px;color:var(--ink3);line-height:1.5" id="revenue-unlock">Calculating...</div>
+        <div class="metric-label">Clients you could serve on the same schedule</div>
       </div>
     </div>
 
@@ -552,15 +556,9 @@ select option{background:#fff}
     <div class="res-section-hdr">Your Custom Automation Roadmap</div>
     <div id="automations-list"></div>
 
-    <!-- Roadmap phases -->
+    <!-- Build order map -->
     <div class="res-section-hdr">Build in This Order</div>
-    <div class="phases" id="phases-list"></div>
-
-    <!-- Quick wins -->
-    <div class="res-section-hdr">3 Things to Do This Week</div>
-    <div style="background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:8px 16px;margin-bottom:8px">
-      <ul class="wins-list" id="wins-list"></ul>
-    </div>
+    <div class="build-map" id="build-map"></div>
 
     <!-- CTA -->
     <div class="cta-block">
@@ -694,9 +692,8 @@ function renderResults(d) {
 
   // Metrics
   document.getElementById('m-hours-before').textContent = d.hours_wasted || '—';
-  document.getElementById('m-hours-after').textContent = d.hours_after || '—';
+  document.getElementById('m-hours-saved').textContent = d.hours_saved_total || '—';
   document.getElementById('m-clients').textContent = d.clients_possible || '—';
-  document.getElementById('revenue-unlock').textContent = d.revenue_unlock || '';
 
   // Automations
   const autoList = document.getElementById('automations-list');
@@ -714,31 +711,35 @@ function renderResults(d) {
         <div class="auto-body">
           <div class="auto-what">${a.what_it_does}</div>
           <div class="auto-without">Without it: ${a.without_it}</div>
-          <div class="auto-tools">${(a.build_with||[]).map(t=>`<span class="auto-tool-pill">${t}</span>`).join('')}</div>
         </div>
       </div>`;
   });
 
-  // Phases
-  const phaseList = document.getElementById('phases-list');
-  phaseList.innerHTML = '';
-  const phaseColors = ['#6366f1','#10b981','#f59e0b'];
-  (d.roadmap_phases || []).forEach((p,i) => {
-    phaseList.innerHTML += `
-      <div class="phase-row">
-        <div class="phase-label" style="background:${phaseColors[i]||'#6366f1'}">${p.phase}</div>
-        <div class="phase-body">
-          <div class="phase-focus">${p.focus}</div>
+  // Build order map
+  const map = document.getElementById('build-map');
+  map.innerHTML = '';
+  const automations = d.automations || [];
+  automations.forEach((a, i) => {
+    map.innerHTML += `
+      <div class="map-step">
+        <div class="map-node">
+          <div class="map-node-num">${a.rank}</div>
+          <div class="map-node-body">
+            <div class="map-node-name">${a.name}</div>
+            <div class="map-node-why">${a.what_it_does}</div>
+          </div>
+          <div class="map-node-save">${a.time_saved}</div>
         </div>
+        ${i < automations.length - 1 ? `<div class="map-connector"><div class="map-conn-line"></div><div class="map-conn-arrow"></div><div class="map-conn-line"></div></div>` : ''}
       </div>`;
   });
-
-  // Quick wins
-  const winsList = document.getElementById('wins-list');
-  winsList.innerHTML = '';
-  (d.quick_wins || []).forEach((w,i) => {
-    winsList.innerHTML += `<li class="win-item"><div class="win-num">${i+1}</div><span>${w}</span></li>`;
-  });
+  if (d.hours_saved_total) {
+    map.innerHTML += `
+      <div class="map-total">
+        <div class="map-total-label">Total time back every week once all 5 are running</div>
+        <div class="map-total-val">${d.hours_saved_total}</div>
+      </div>`;
+  }
 
   // Show results, hide steps
   document.getElementById(`step-${currentStep}`).classList.remove('active');

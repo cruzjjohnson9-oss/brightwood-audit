@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 
   const { niche, clients, sessionsPerWeek, programLength, tools, manualTasks, hoursPerWeek, extraContext } = body;
 
-  const prompt = `You are an expert AI automation consultant who audits coaching businesses. Be direct, specific, and no fluff.
+  const prompt = `You are an expert AI automation consultant who audits coaching businesses. Be direct, specific, no fluff. Think like someone who has built AI systems for hundreds of coaches.
 
 COACH INFO:
 - Niche: ${niche || 'coaching'}
@@ -36,78 +36,69 @@ COACH INFO:
 - Manual tasks: ${manualTasks || 'general admin'}
 ${extraContext ? `- Notes: ${extraContext}` : ''}
 
-Return ONLY valid JSON. No markdown fences. No explanation. Fill every field:
+Return ONLY valid JSON. No markdown. No extra text. Fill every field with real, specific content for this coach:
 
 {
   "score": 15,
   "grade": "D",
-  "grade_label": "Fully Manual",
+  "grade_label": "Flying Blind",
   "hours_wasted": "12 hrs/wk",
-  "hours_after": "2 hrs/wk",
+  "hours_saved_total": "9 hrs/wk",
   "clients_now": "8",
   "clients_possible": "25",
-  "revenue_unlock": "$4k–$6k/mo",
-  "summary": "Two honest sentences about where they are and what it's costing them.",
+  "summary": "2 honest sentences. Name exactly what's costing them — their specific tasks, their niche. No generic statements.",
   "automations": [
     {
       "rank": 1,
-      "name": "Automated Client Onboarding",
-      "what_it_does": "One sentence describing exactly what it does.",
+      "name": "Specific Automation Name",
+      "what_it_does": "One concrete sentence — what triggers it, what it produces, where it sends it.",
       "time_saved": "3 hrs/wk",
       "impact": "high",
-      "without_it": "One sentence on what breaks without it.",
-      "build_with": ["tool1", "tool2"]
+      "without_it": "One sentence on the real cost — lost clients, burnout, dropped balls."
     },
     {
       "rank": 2,
-      "name": "Session Prep & Notes AI",
-      "what_it_does": "One sentence.",
+      "name": "Specific Automation Name",
+      "what_it_does": "One concrete sentence.",
       "time_saved": "2 hrs/wk",
       "impact": "high",
-      "without_it": "One sentence.",
-      "build_with": ["tool1", "tool2"]
+      "without_it": "One sentence."
     },
     {
       "rank": 3,
-      "name": "Automated Follow-Up Sequences",
-      "what_it_does": "One sentence.",
+      "name": "Specific Automation Name",
+      "what_it_does": "One concrete sentence.",
       "time_saved": "2 hrs/wk",
       "impact": "medium",
-      "without_it": "One sentence.",
-      "build_with": ["tool1", "tool2"]
+      "without_it": "One sentence."
     },
     {
       "rank": 4,
-      "name": "Payment & Scheduling Automation",
-      "what_it_does": "One sentence.",
+      "name": "Specific Automation Name",
+      "what_it_does": "One concrete sentence.",
       "time_saved": "1.5 hrs/wk",
       "impact": "medium",
-      "without_it": "One sentence.",
-      "build_with": ["tool1", "tool2"]
+      "without_it": "One sentence."
     },
     {
       "rank": 5,
-      "name": "Progress Tracking & Reporting",
-      "what_it_does": "One sentence.",
-      "time_saved": "1.5 hrs/wk",
-      "impact": "medium",
-      "without_it": "One sentence.",
-      "build_with": ["tool1", "tool2"]
+      "name": "Specific Automation Name",
+      "what_it_does": "One concrete sentence.",
+      "time_saved": "1 hr/wk",
+      "impact": "low",
+      "without_it": "One sentence."
     }
-  ],
-  "quick_wins": [
-    "Specific action they can do this week.",
-    "Second specific action.",
-    "Third specific action."
-  ],
-  "roadmap_phases": [
-    { "phase": "Week 1–2", "focus": "One sentence on what to build first and why." },
-    { "phase": "Week 3–4", "focus": "One sentence on what to build next." },
-    { "phase": "Month 2+", "focus": "One sentence on the long-term foundation." }
   ]
 }
 
-Be specific to their niche (${niche || 'coaching'}). Replace all placeholder text with real, tailored content. Score 0-100 based on how automated they currently are.`;
+GRADE LABELS to choose from based on their score:
+- 0–20: "Flying Blind"
+- 21–40: "Winging It Week to Week"
+- 41–60: "Some Systems, Still Leaking"
+- 61–80: "Getting There"
+- 81–100: "Well-Oiled Machine"
+
+Be specific to their niche (${niche || 'coaching'}). The automation names and descriptions must reflect their actual tasks — not generic placeholders. hours_saved_total = sum of all 5 time_saved values.`;
 
   try {
     const controller = new AbortController();
