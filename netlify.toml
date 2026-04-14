@@ -2,4 +2,7 @@
   functions = "netlify/functions"
 
 [functions]
-  timeout = 26
+  node_bundler = "zisi"
+
+[context.production.environment]
+  NODE_VERSION = "18"
