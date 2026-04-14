@@ -70,12 +70,12 @@ Return ONLY valid JSON — no markdown, no explanation. Exactly this structure:
 }
 
 RULES:
-- Give exactly 5-7 automations ranked by ROI for THEIR specific situation
-- Be specific to their niche (${niche}) — not generic coaching advice
-- Factor in their session volume and client count for time savings estimates
-- Quick wins must be actionable steps they can take in the next 7 days
-- Be honest — if they're already partially automated, say so
-- Roadmap phases must reference their specific manual tasks`;
+- Give exactly 5 automations (not more)
+- Keep each field SHORT — one tight sentence max
+- Be specific to their niche (${niche})
+- Quick wins: 3 items, one sentence each
+- Roadmap phases: one sentence each
+- No filler, no padding, be direct`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -86,8 +86,8 @@ RULES:
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2500,
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1200,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
