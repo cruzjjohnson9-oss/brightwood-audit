@@ -11,6 +11,11 @@ exports.handler = async (event) => {
     return { statusCode: 200, headers, body: '' };
   }
 
+  // Health check
+  if (event.httpMethod === 'GET') {
+    return { statusCode: 200, headers, body: JSON.stringify({ ok: true, key: !!process.env.ANTHROPIC_API_KEY }) };
+  }
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }

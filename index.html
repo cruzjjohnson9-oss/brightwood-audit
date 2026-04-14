@@ -655,8 +655,8 @@ async function submit() {
     const data = await res.json();
     if (!res.ok || data.error) { showError(data.error || 'Something went wrong. Try again.'); return; }
     renderResults(data);
-  } catch {
-    showError('Network error. Check your connection and try again.');
+  } catch (err) {
+    showError('Error: ' + (err && err.message ? err.message : String(err)));
   } finally {
     btn.disabled = false;
     btn.classList.remove('loading');
