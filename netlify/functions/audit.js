@@ -26,56 +26,14 @@ exports.handler = async (event) => {
 
   const { niche, clients, sessionsPerWeek, programLength, tools, manualTasks, hoursPerWeek, extraContext } = body;
 
-  const prompt = `You are an AI automation consultant for coaching businesses. Analyze this coach's situation and generate a custom automation roadmap.
+  const prompt = `You are an AI automation consultant. Analyze this ${niche || 'coaching'} coach and return ONLY valid JSON, no markdown.
 
-ABOUT THIS COACH:
-- Niche: ${niche || 'coaching'}
-- Active clients: ${clients || 'unknown'}
-- Sessions per week: ${sessionsPerWeek || 'unknown'}
-- Program length: ${programLength || 'unknown'}
-- Tools they currently use: ${tools || 'none specified'}
-- Hours spent on admin per week: ${hoursPerWeek || 'unknown'}
-- What they're doing manually: ${manualTasks || 'various admin tasks'}
-${extraContext ? `- Additional context: ${extraContext}` : ''}
+COACH: ${clients || '?'} clients, ${sessionsPerWeek || '?'} sessions/wk, ${hoursPerWeek || '?'} hrs admin/wk, program: ${programLength || '?'}, tools: ${tools || 'none'}, manual tasks: ${manualTasks || 'general admin'}${extraContext ? `, notes: ${extraContext}` : ''}
 
-Return ONLY valid JSON — no markdown, no explanation. Exactly this structure:
+Return exactly this JSON (all strings short, one sentence max):
+{"score":0-100,"grade":"A-F","grade_label":"e.g. Fully Manual","hours_wasted":"X hrs/wk","hours_after":"X hrs/wk","clients_now":"${clients || 'estimate'}","clients_possible":"X clients","revenue_unlock":"$X-Y/mo","summary":"2 sentences max","automations":[{"rank":1,"name":"","what_it_does":"","time_saved":"","impact":"high|medium|low","without_it":"","build_with":[]}],"quick_wins":["","",""],"roadmap_phases":[{"phase":"Week 1-2","focus":""},{"phase":"Week 3-4","focus":""},{"phase":"Month 2+","focus":""}]}
 
-{
-  "score": <number 0-100, how automated they currently are>,
-  "grade": "<letter grade A/B/C/D/F>",
-  "grade_label": "<one phrase like 'Fully Manual' or 'Partially Automated'>",
-  "hours_wasted": "<X hrs/week estimate based on their situation>",
-  "hours_after": "<X hrs/week after full automation>",
-  "clients_now": "<their current client count or estimate>",
-  "clients_possible": "<how many clients they could handle after automation>",
-  "revenue_unlock": "<estimated revenue unlock, e.g. '$3k–$5k/mo in capacity'>",
-  "summary": "<2-3 sentences. Honest, direct assessment of where they are and what the gap is. No fluff.>",
-  "automations": [
-    {
-      "rank": 1,
-      "name": "<automation name>",
-      "what_it_does": "<one sentence>",
-      "time_saved": "<X hrs/week for their specific situation>",
-      "impact": "high|medium|low",
-      "without_it": "<one sentence — what breaks or costs them without this>",
-      "build_with": ["tool1", "tool2"]
-    }
-  ],
-  "quick_wins": ["<action item 1>", "<action item 2>", "<action item 3>"],
-  "roadmap_phases": [
-    { "phase": "Week 1–2", "focus": "<what to build first and why>" },
-    { "phase": "Week 3–4", "focus": "<what to build next>" },
-    { "phase": "Month 2+", "focus": "<what to build once foundation is running>" }
-  ]
-}
-
-RULES:
-- Give exactly 5 automations (not more)
-- Keep each field SHORT — one tight sentence max
-- Be specific to their niche (${niche})
-- Quick wins: 3 items, one sentence each
-- Roadmap phases: one sentence each
-- No filler, no padding, be direct`;
+Give exactly 5 automations specific to ${niche || 'coaching'}.`;
 
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -87,7 +45,7 @@ RULES:
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1200,
+        max_tokens: 900,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
